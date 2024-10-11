@@ -19,19 +19,16 @@ No modifications or derivative works are allowed.
 ## 4. Commercial Use:
 
 Commercial use is not allowed.
-## 5. Attribution:
-
-No attribution is required.
-## 6. Intellectual Property Rights:
+## 5. Intellectual Property Rights:
 
 All intellectual property rights in the Software shall remain the property of Licensor. The Licensee does not acquire any rights to the Software except for the limited use rights specified in this Agreement.
-## 7. Warranty and Liability:
+## 6. Warranty and Liability:
 
 The Software is provided "as is" without warranty of any kind. Licensor shall not be liable for any damages arising out of or related to the use or inability to use the Software.
-## 8. Termination:
+## 7. Termination:
 
 This Agreement shall terminate automatically if Licensee breaches any of its terms and conditions. Upon termination, Licensee must cease all use of the Software and destroy all copies.
-## 9. Governing Law:
+## 8. Governing Law:
 
 This Agreement shall be governed by and construed in accordance with the laws of the United States.
 
