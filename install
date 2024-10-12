@@ -1,0 +1,57 @@
+#!/bin/bash
+
+GITHUB_REPO=https://github.com/Verdugo-Web-Services/crucible-release
+
+# get version from GH
+VERSION=$(git ls-remote -t --refs $GITHUB_REPO | sed -n -e 's/^.*tags\///p')
+
+if [[ ! $VERSION ]]; then
+  echo "Unable to fetch latest version from GitHub."
+  exit 1
+fi
+
+# check for existing installation
+CRUCIBLE_LOCATION=$(which crucible)
+
+# remove previous installation
+if [[ $CRUCIBLE_LOCATION ]]; then
+  CRUCIBLE_VERSION="v$(crucible -v)"
+  if [[ $CRUCIBLE_VERSION == "$VERSION" ]]; then
+    echo "Latest version of crucible is already install at $CRUCIBLE_LOCATION"
+    exit 0
+  else
+    rm "$CRUCIBLE_LOCATION"/crucible
+  fi
+fi
+
+echo "Previous installation not found. Installing crucible version $VERSION..."
+
+FILENAME=""
+OS_INFO=$(uname -a)
+
+if [[ $OSTYPE == "linux-gnu" ]]; then
+  FILENAME="crucible-linux-x64"
+elif [[ $OS_INFO == *"x64"* ]]; then
+  FILENAME="crucible-macos-x64"
+else
+  FILENAME="crucible-macos-arm64"
+fi
+
+ehco "Downloading $VERSION for $OSTYPE..."
+
+DOWNLOAD_URL="$GITHUB_REPO/releases/download/$VERSION/$FILENAME"
+curl -sL "$DOWNLOAD_URL" --create-dirs -o "$HOME"/.crucible/bin/"$FILENAME"
+
+# rename file
+mv "$HOME"/.crucible/bin/"$FILENAME" "$HOME"/.crucible/bin/crucible
+chmod +x "$HOME/.crucible/bin/crucible"
+PATH_STRING='\n\n# Crucible\nexport PATH="$PATH:$HOME/.crucible/bin"'
+
+if [[ $SHELL == *"bash"* ]]; then
+  echo -e "$PATH_STRING" >>"$HOME/.bashrc"
+elif [[ $SHELL == *"zsh"* ]]; then
+  echo -e "$PATH_STRING" >>"$HOME/.zshrc"
+else
+  echo -e "Unable to automatically add crucible to your path. Please add \n$PATH to your path"
+  exit 1
+fi
