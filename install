@@ -12,6 +12,7 @@ fi
 
 # check for existing installation
 CRUCIBLE_LOCATION=$(which crucible)
+HAS_PREVIOUS=false
 
 # remove previous installation
 if [[ $CRUCIBLE_LOCATION ]]; then
@@ -21,6 +22,7 @@ if [[ $CRUCIBLE_LOCATION ]]; then
     exit 0
   else
     rm "$CRUCIBLE_LOCATION"/crucible
+    HAS_PREVIOUS=true
   fi
 fi
 
@@ -29,6 +31,7 @@ echo "Previous installation not found. Installing crucible version $VERSION..."
 FILENAME=""
 OS_INFO=$(uname -a)
 
+# check for OS and CPU architecture types
 if [[ $OSTYPE == "linux-gnu" ]]; then
   FILENAME="crucible-linux-x64"
 elif [[ $OS_INFO == *"x64"* ]]; then
@@ -37,7 +40,7 @@ else
   FILENAME="crucible-macos-arm64"
 fi
 
-ehco "Downloading $VERSION for $OSTYPE..."
+echo "Downloading $VERSION for $OSTYPE..."
 
 DOWNLOAD_URL="$GITHUB_REPO/releases/download/$VERSION/$FILENAME"
 curl -sL "$DOWNLOAD_URL" --create-dirs -o "$HOME"/.crucible/bin/"$FILENAME"
@@ -45,13 +48,17 @@ curl -sL "$DOWNLOAD_URL" --create-dirs -o "$HOME"/.crucible/bin/"$FILENAME"
 # rename file
 mv "$HOME"/.crucible/bin/"$FILENAME" "$HOME"/.crucible/bin/crucible
 chmod +x "$HOME/.crucible/bin/crucible"
+
+# add to path
 PATH_STRING='\n\n# Crucible\nexport PATH="$PATH:$HOME/.crucible/bin"'
 
-if [[ $SHELL == *"bash"* ]]; then
-  echo -e "$PATH_STRING" >>"$HOME/.bashrc"
-elif [[ $SHELL == *"zsh"* ]]; then
-  echo -e "$PATH_STRING" >>"$HOME/.zshrc"
-else
-  echo -e "Unable to automatically add crucible to your path. Please add \n$PATH to your path"
-  exit 1
+if [[ ! $HAS_PREVIOUS ]]; then
+  if [[ $SHELL == *"bash"* ]]; then
+    echo -e "$PATH_STRING" >>"$HOME/.bashrc"
+  elif [[ $SHELL == *"zsh"* ]]; then
+    echo -e "$PATH_STRING" >>"$HOME/.zshrc"
+  else
+    echo -e "Unable to automatically add crucible to your path. Please add \n$PATH to your path"
+    exit 1
+  fi
 fi
